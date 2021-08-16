@@ -1,4 +1,4 @@
-# Mock Clients used for Testing Codefighter Server
+# Mock Clients used for Testing/Developing Codefighter Server
 
 ## Links & Resources
 
