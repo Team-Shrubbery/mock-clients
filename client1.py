@@ -1,42 +1,63 @@
 import socketio
 from time import time, sleep
 import random
+import json
 
 
-# -------------- Will trigger Global Namespace in Server ----------
-sio = socketio.Client()
+import asyncio
+
+sio = socketio.AsyncClient(json=json)
 
 
 @sio.event
-def connect():
+async def connect():
     print("Player 1 Connected")
-    sio.emit("message", "Player 1")
+    await sio.emit("message", "Player 1")
 
 
 @sio.event
-def message(data):
+async def message(data):
     print("Player1 Received Message:", data)
-    sio.emit("my response", "A listener that was triggered by response")
+    await sio.emit("my response", "A listener that was triggered by response")
 
 
 @sio.event
-def move(data):
+async def move(data):
     print("Player 1 Received Move: ", data)
 
 
 @sio.event
-def disconnect():
+async def disconnect():
     print("Player 1 Disconnected from server")
 
 
-sio.connect("http://localhost:8000")
+async def main():
+    await sio.connect("http://localhost:8000")
+    while True:
+        a_move = random.choice(["left", "right", "up", "down"])
+        await sio.emit("move", a_move)
+        sleep(1)
 
-while True:
-    a_move = random.choice(["left", "right", "up", "down"])
-    sio.emit(
-        "move",
-        a_move,
-    )
-    sleep(1)
+    await sio.wait()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+# while True:
+#     a_move = random.choice(["left", "right", "up", "down"])
+#     sio.emit(
+#         "move",
+#         a_move,
+#     )
+#     sleep(1)
 
 # sio.wait()
+
+
+# async def make_call():
+#     while True:
+#         a_move = random.choice(["left", "right", "up", "down"])
+#         await sio.emit("move", a_move)
+#         sleep(1)
